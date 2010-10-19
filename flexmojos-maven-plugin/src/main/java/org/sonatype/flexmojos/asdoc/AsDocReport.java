@@ -20,9 +20,9 @@
  */
 package org.sonatype.flexmojos.asdoc;
 
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
-import static org.sonatype.flexmojos.common.FlexExtension.POM;
+import static org.sonatype.flexmojos.commons.FlexExtension.POM;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWF;
 
 import java.io.File;
 import java.util.Locale;

@@ -20,8 +20,8 @@
  */
 package org.sonatype.flexmojos.flexbuilder;
 
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWF;
 
 import java.util.Date;
 import java.util.List;

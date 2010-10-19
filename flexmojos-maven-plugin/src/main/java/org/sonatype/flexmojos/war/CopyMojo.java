@@ -43,8 +43,8 @@ import org.apache.maven.project.artifact.InvalidDependencyVersionException;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.flexmojos.MavenMojo;
-import org.sonatype.flexmojos.common.FlexExtension;
 import org.sonatype.flexmojos.common.FlexScopes;
+import org.sonatype.flexmojos.commons.FlexExtension;
 import org.sonatype.flexmojos.compiler.AbstractCompilerMojo;
 import org.sonatype.flexmojos.utilities.CompileConfigurationLoader;
 import org.sonatype.flexmojos.utilities.MavenUtils;
@@ -60,7 +60,7 @@ import org.sonatype.flexmojos.utilities.MavenUtils;
  */
 public class CopyMojo
     extends AbstractMojo
-    implements FlexScopes, FlexExtension, MavenMojo
+    implements FlexScopes, MavenMojo
 {
 
     /**
@@ -215,7 +215,7 @@ public class CopyMojo
 
     private List<Artifact> getAirArtifacts()
     {
-        return getArtifacts( AIR, project );
+        return getArtifacts( FlexExtension.AIR.toString(), project );
     }
 
     @SuppressWarnings( "unchecked" )
@@ -292,7 +292,7 @@ public class CopyMojo
 
     private List<Artifact> getRSLDependencies( MavenProject artifactProject )
     {
-        List<Artifact> swcDeps = getArtifacts( SWC, artifactProject );
+        List<Artifact> swcDeps = getArtifacts( FlexExtension.SWC.toString(), artifactProject );
         for ( Iterator<Artifact> iterator = swcDeps.iterator(); iterator.hasNext(); )
         {
             Artifact artifact = (Artifact) iterator.next();
@@ -339,7 +339,7 @@ public class CopyMojo
         {
             artifacts.add( artifactFactory.createArtifactWithClassifier( artifactProject.getGroupId(),
                                                                          artifactProject.getArtifactId(),
-                                                                         artifactProject.getVersion(), SWF, locale ) );
+                                                                         artifactProject.getVersion(), FlexExtension.SWF.toString(), locale ) );
         }
         return artifacts;
     }
@@ -351,7 +351,7 @@ public class CopyMojo
 
     private List<Artifact> getSwfArtifacts()
     {
-        return getArtifacts( SWF, project );
+        return getArtifacts( FlexExtension.SWF.toString(), project );
     }
 
     private void performRslCopy( MavenProject artifactProject )
@@ -371,11 +371,11 @@ public class CopyMojo
             String extension;
             if ( RSL.equals( rslArtifact.getScope() ) )
             {
-                extension = SWF;
+                extension = FlexExtension.SWF.toString();
             }
             else
             {
-                extension = SWZ;
+                extension = FlexExtension.SWZ.toString();
             }
 
             rslArtifact =
@@ -474,7 +474,7 @@ public class CopyMojo
     private File resolveRuntimeLocaleDestination( String runtimeLocaleOutputPath, Artifact artifact )
     {
         String path = replaceContextRoot( runtimeLocaleOutputPath );
-        path = MavenUtils.getRuntimeLocaleOutputPath( path, artifact, artifact.getClassifier(), SWF );
+        path = MavenUtils.getRuntimeLocaleOutputPath( path, artifact, artifact.getClassifier(), FlexExtension.SWF.toString() );
 
         return new File( path ).getAbsoluteFile();
     }

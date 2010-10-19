@@ -22,6 +22,8 @@ package org.sonatype.flexmojos.test;
 
 import java.io.File;
 
+import org.sonatype.flexmojos.commons.ProjectType;
+
 public class TestRequest
 {
 
@@ -38,6 +40,8 @@ public class TestRequest
     private String flashplayerCommand;
 
     private boolean allowHeadlessMode = true;
+    
+    private ProjectType projectType;
 
     /**
      * @return the firstConnectionTimeout
@@ -132,4 +136,15 @@ public class TestRequest
     {
         this.allowHeadlessMode = allowHeadlessMode;
     }
+
+	public ProjectType getProjectType() {
+		return projectType;
+	}
+
+	public void setProjectType(ProjectType projectType) {
+		this.projectType = projectType;
+	}
+    
+    
+    
 }

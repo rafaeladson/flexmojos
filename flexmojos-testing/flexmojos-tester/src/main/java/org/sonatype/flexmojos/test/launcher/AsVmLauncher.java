@@ -20,7 +20,6 @@
  */
 package org.sonatype.flexmojos.test.launcher;
 
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 
@@ -28,12 +27,12 @@ import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 import org.codehaus.plexus.util.cli.StreamPumper;
+import org.sonatype.flexmojos.commons.OSDetector;
 import org.sonatype.flexmojos.test.AbstractControlledThread;
 import org.sonatype.flexmojos.test.ControlledThread;
 import org.sonatype.flexmojos.test.TestRequest;
 import org.sonatype.flexmojos.test.ThreadStatus;
-import org.sonatype.flexmojos.test.util.OSUtils;
-import org.sonatype.flexmojos.test.util.PathUtil;
+import org.sonatype.flexmojos.test.launcher.commandBuilders.CommandLineBuilderFactory;
 
 /**
  * ActionScript runtime launcher. This class is used to launch the application that runs unit tests.
@@ -51,6 +50,10 @@ public class AsVmLauncher
     private String flashplayerCommand;
 
     private File log;
+    
+    private OSDetector osDetector = new OSDetector();
+    
+    private CommandLineBuilderFactory commandLineBuilderFactory = new CommandLineBuilderFactory();
 
     /**
      * Run the SWF that contains the FlexUnit tests.
@@ -75,51 +78,57 @@ public class AsVmLauncher
             throw new InvalidSwfException( "targetSwf is null" );
         }
 
-        if ( !targetSwf.exists() )
+        checkTargetSwfExists(targetSwf);
+
+//        this.flashplayerCommand = request.getFlashplayerCommand();
+        this.allowHeadlessMode = request.getAllowHeadlessMode();
+        
+        try {
+        	String[] commandLineArguments = commandLineBuilderFactory.getCommandLineBuilder(request.getProjectType(), osDetector).buildCommandLine(request.getSwf(), request.getFlashplayerCommand());
+        	getLogger().debug( "[LAUNCHER] ASVmLauncher starting" );
+        	
+        	getLogger().debug( "[LAUNCHER] exec: " + flashplayerCommand + " - " + targetSwf );
+        	
+        	getLogger().debug( "[LAUNCHER] Creating process" );
+        	if ( useXvfb() )
+        	{
+        		runCommandHeadless( commandLineArguments );
+        	}
+        	else
+        	{
+        		runCommand( commandLineArguments );
+        	}
+        	getLogger().debug( "[LAUNCHER] Process created " + process );
+        	
+        	status = ThreadStatus.STARTED;
+        	
+        	launch();
+        }
+        catch( IOException ioe ) {
+        	throw new LaunchFlashPlayerException( "Could not build command to launch tests", ioe );
+        }
+
+    }
+
+	protected void checkTargetSwfExists(File targetSwf) {
+		if ( !targetSwf.exists() )
         {
             throw new InvalidSwfException( "targetSwf not found " + targetSwf );
         }
-
-        this.flashplayerCommand = request.getFlashplayerCommand();
-        this.allowHeadlessMode = request.getAllowHeadlessMode();
-
-        if ( flashplayerCommand == null || "${flashplayer.command}".equals( flashplayerCommand ) )
-        {
-            flashplayerCommand = OSUtils.getPlatformDefaultCommand();
-        }
-
-        getLogger().debug( "[LAUNCHER] ASVmLauncher starting" );
-
-        getLogger().debug( "[LAUNCHER] exec: " + flashplayerCommand + " - " + targetSwf );
-
-        getLogger().debug( "[LAUNCHER] Creating process" );
-        if ( useXvfb() )
-        {
-            runFlashplayerHeadless( flashplayerCommand, targetSwf );
-        }
-        else
-        {
-            runFlashplayer( flashplayerCommand, targetSwf );
-        }
-        getLogger().debug( "[LAUNCHER] Process created " + process );
-
-        status = ThreadStatus.STARTED;
-
-        launch();
-    }
+	}
 
     protected boolean useXvfb()
     {
-        return allowHeadlessMode && OSUtils.isLinux() && GraphicsEnvironment.isHeadless();
+        return allowHeadlessMode && osDetector.isLinux() && osDetector.isHeadless();
     }
 
-    private void runFlashplayer( String flashPlayer, File targetSwf )
+    protected void runCommand( String[] command )
         throws LaunchFlashPlayerException
     {
         getLogger().warn( "[LAUNCHER] Using regular flashplayer tests" );
         try
         {
-            process = Runtime.getRuntime().exec( new String[] { flashPlayer, PathUtil.getCanonicalPath( targetSwf ) } );
+            process = Runtime.getRuntime().exec( command );
         }
         catch ( IOException e )
         {
@@ -127,7 +136,7 @@ public class AsVmLauncher
         }
     }
 
-    private void runFlashplayerHeadless( String flashPlayer, File targetSwf )
+    protected void runCommandHeadless( String[] commandLineArguments)
         throws LaunchFlashPlayerException
     {
         getLogger().warn( "[LAUNCHER] Using xvfb-run to launch headless tests" );
@@ -160,10 +169,13 @@ public class AsVmLauncher
 
         try
         {
-            process =
-                Runtime.getRuntime().exec(
-                                           new String[] { "xvfb-run", "-a", "-e", log.getAbsolutePath(), flashPlayer,
-                                               PathUtil.getCanonicalPath( targetSwf ) } );
+        	String[] xvfbCommandPart = new String[] {"xvfb-run", "-a", "-e", log.getAbsolutePath() };
+        	String[] commandArray = new String[xvfbCommandPart.length + commandLineArguments.length];
+        	System.arraycopy(xvfbCommandPart, 0, commandArray, 0, commandArray.length);
+        	System.arraycopy(commandLineArguments, 0, commandArray, xvfbCommandPart.length, commandLineArguments.length);
+        	
+        	process =
+                Runtime.getRuntime().exec(commandArray);
         }
         catch ( IOException e )
         {
@@ -269,7 +281,7 @@ public class AsVmLauncher
                     break;
                 }
             case 139:
-                if ( OSUtils.isLinux() )
+                if ( osDetector.isLinux() )
                 {
                     getLogger().debug( "[LAUNCHER] Flashplayer exit as expected" );
 
@@ -351,5 +363,11 @@ public class AsVmLauncher
         process = null;
         consoleLog = new StringBuffer();
     }
+
+	void setOsDetector(OSDetector osDetector) {
+		this.osDetector = osDetector;
+	}
+    
+    
 
 }

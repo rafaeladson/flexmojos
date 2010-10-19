@@ -20,7 +20,7 @@
  */
 package org.sonatype.flexmojos.asdoc;
 
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWC;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +37,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.sonatype.flexmojos.commons.FlexExtension;
 
 /**
  * Goal which generates documentation from the ActionScript sources in DITA format.
@@ -73,7 +74,7 @@ public class AttachDitaAsdocMojo
             File tmp = new File( build.getDirectory(), "temp" );
             tmp.mkdirs();
 
-            File temp = File.createTempFile( build.getFinalName(), SWC, tmp );
+            File temp = File.createTempFile( build.getFinalName(), FlexExtension.SWC.toString(), tmp );
 
             FileUtils.copyFile( output, temp );
             output.delete();

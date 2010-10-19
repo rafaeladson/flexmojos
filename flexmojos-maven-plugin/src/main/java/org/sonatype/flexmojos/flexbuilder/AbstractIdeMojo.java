@@ -20,9 +20,9 @@
  */
 package org.sonatype.flexmojos.flexbuilder;
 
-import static org.sonatype.flexmojos.common.FlexExtension.AIR;
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
+import static org.sonatype.flexmojos.commons.FlexExtension.AIR;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWF;
 
 import java.io.File;
 import java.lang.reflect.Field;

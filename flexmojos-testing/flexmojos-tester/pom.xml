@@ -69,6 +69,22 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.sonatype.flexmojos</groupId>
+      <artifactId>flexmojos-commons</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+	  <groupId>velocity</groupId>
+	  <artifactId>velocity</artifactId>
+	  <version>1.6.3</version>
+	</dependency>
+	<dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>3.0</version>
+      <scope>test</scope>
+	</dependency>
   </dependencies>
 
 </project>

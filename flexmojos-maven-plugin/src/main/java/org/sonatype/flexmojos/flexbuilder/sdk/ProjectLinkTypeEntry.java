@@ -1,6 +1,6 @@
 package org.sonatype.flexmojos.flexbuilder.sdk;
 
-import org.sonatype.flexmojos.flexbuilder.ProjectType;
+import org.sonatype.flexmojos.commons.ProjectType;
 
 public class ProjectLinkTypeEntry
 {

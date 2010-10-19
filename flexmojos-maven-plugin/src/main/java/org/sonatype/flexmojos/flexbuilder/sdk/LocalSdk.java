@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.reactor.MavenExecutionException;
+import org.sonatype.flexmojos.commons.ProjectType;
 import org.sonatype.flexmojos.flexbuilder.FbIdeDependency;
-import org.sonatype.flexmojos.flexbuilder.ProjectType;
 
 public class LocalSdk
 {

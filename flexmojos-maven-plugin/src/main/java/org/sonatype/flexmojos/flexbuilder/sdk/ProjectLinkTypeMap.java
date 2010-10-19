@@ -2,7 +2,7 @@ package org.sonatype.flexmojos.flexbuilder.sdk;
 
 import java.util.HashMap;
 
-import org.sonatype.flexmojos.flexbuilder.ProjectType;
+import org.sonatype.flexmojos.commons.ProjectType;
 
 public class ProjectLinkTypeMap
     extends HashMap<ProjectType, ProjectLinkTypeEntry>

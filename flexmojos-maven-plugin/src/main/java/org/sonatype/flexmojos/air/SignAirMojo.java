@@ -20,9 +20,9 @@
  */
 package org.sonatype.flexmojos.air;
 
-import static org.sonatype.flexmojos.common.FlexExtension.AIR;
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
+import static org.sonatype.flexmojos.commons.FlexExtension.AIR;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWF;
 import static org.sonatype.flexmojos.test.util.PathUtil.getCanonicalPath;
 
 import java.io.File;
@@ -50,6 +50,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.sonatype.flexmojos.MavenMojo;
+import org.sonatype.flexmojos.commons.FlexExtension;
 import org.sonatype.flexmojos.utilities.FileInterpolationUtil;
 
 import com.adobe.air.AIRPackager;
@@ -293,7 +294,7 @@ public class SignAirMojo
             }
             else if ( SWF.equals( packaging ) )
             {
-                projectHelper.attachArtifact( project, AIR, output );
+                projectHelper.attachArtifact( project, FlexExtension.AIR.toString(), output );
             }
             else
             {

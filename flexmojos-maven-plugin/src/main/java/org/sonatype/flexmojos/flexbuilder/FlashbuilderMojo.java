@@ -11,6 +11,7 @@ import java.util.Collection;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.velocity.VelocityContext;
+import org.sonatype.flexmojos.commons.ProjectType;
 
 /**
  * Extends the standard Flex Builder configuration.

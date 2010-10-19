@@ -27,15 +27,21 @@ import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.sonatype.flexmojos.AbstractIrvinMojo;
+import org.sonatype.flexmojos.commons.FlexExtension;
+import org.sonatype.flexmojos.commons.ProjectType;
 import org.sonatype.flexmojos.test.launcher.LaunchFlashPlayerException;
 import org.sonatype.flexmojos.test.report.TestCaseReport;
+import org.sonatype.flexmojos.utilities.MavenUtils;
 
 /**
  * Goal to run unit tests on Flex. It does support the following frameworks:
@@ -87,7 +93,18 @@ public class FlexUnitMojo
      * @readonly
      */
     private File testOutputDirectory;
-
+    
+    
+    /**
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    private MavenProject project;
+    
+    
+    
+    
     private Throwable executionError;
 
     /**
@@ -144,6 +161,12 @@ public class FlexUnitMojo
      * @component role="org.sonatype.flexmojos.test.TestRunner"
      */
     private TestRunner testRunner;
+    
+    
+    /**
+     * @component
+     */
+    private ArtifactResolver artifactResolver;
 
     @Override
     public void execute()
@@ -267,7 +290,16 @@ public class FlexUnitMojo
         {
             try
             {
+            	
+            	Artifact airGlobalArtifact = MavenUtils.searchFor(MavenUtils.getDependencyArtifacts(project, artifactResolver, localRepository, remoteRepositories, artifactMetadataSource, artifactFactory),
+            			"com.adobe.flex.framework", "airglobal", null, FlexExtension.SWC.toString(), null);            	
+            	boolean isAir = (airGlobalArtifact != null);
+            	FlexExtension packaging = FlexExtension.get(project.getArtifact().getType() );
+            	ProjectType projectType = ProjectType.getProjectType(packaging, isAir, false);
+            	
+            	
                 TestRequest testRequest = new TestRequest();
+                testRequest.setProjectType(projectType);
                 testRequest.setTestControlPort( testControlPort );
                 testRequest.setTestPort( testPort );
                 testRequest.setSwf( new File( testOutputDirectory, swfName ) );

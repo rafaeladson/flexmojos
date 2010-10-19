@@ -20,12 +20,11 @@
  */
 package org.sonatype.flexmojos.compiler;
 
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
-
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.sonatype.flexmojos.commons.FlexExtension;
 
 /**
  * Build a SWC of the test classes for the current project.
@@ -42,7 +41,7 @@ public class TestSwcCompilerMojo
     @Override
     protected void attachArtifact()
     {
-        projectHelper.attachArtifact( project, SWC, "test", getOutput() );
+        projectHelper.attachArtifact( project, FlexExtension.SWC.toString(), "test", getOutput() );
     }
 
     @Override

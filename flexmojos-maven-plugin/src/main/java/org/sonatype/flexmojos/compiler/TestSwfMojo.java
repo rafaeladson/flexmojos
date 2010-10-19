@@ -20,11 +20,10 @@
  */
 package org.sonatype.flexmojos.compiler;
 
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
-
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.sonatype.flexmojos.commons.FlexExtension;
 
 /**
  * Build the SWF including all TEST libraries.
@@ -41,7 +40,7 @@ public class TestSwfMojo
     @Override
     protected void attachArtifact()
     {
-        projectHelper.attachArtifact( project, SWF, "test", getOutput() );
+        projectHelper.attachArtifact( project, FlexExtension.SWF.toString(), "test", getOutput() );
     }
 
     @Override

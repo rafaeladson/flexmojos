@@ -20,13 +20,14 @@
  */
 package org.sonatype.flexmojos.configGenerator;
 
-import static org.sonatype.flexmojos.common.FlexExtension.RB_SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.RB_SWC;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.sonatype.flexmojos.common.FlexClassifier;
+import org.sonatype.flexmojos.commons.FlexExtension;
 import org.sonatype.flexmojos.compiler.FlexConfigBuilder;
 import org.sonatype.flexmojos.compiler.SwcMojo;
 import org.sonatype.flexmojos.test.util.PathUtil;
@@ -111,7 +112,7 @@ public class LibraryFlexConfigGeneratorMojo
     {
         FlexConfigBuilder configBuilder =
             createFlexConfigBuilderWithoutBuild( getResourceBundleConfiguration( locale, localePath ) );
-        File output = getRuntimeLocaleOutputFile( locale, RB_SWC );
+        File output = getRuntimeLocaleOutputFile( locale, FlexExtension.RB_SWC.toString() );
         configBuilder.addOutput( output );
         try
         {
@@ -122,7 +123,7 @@ public class LibraryFlexConfigGeneratorMojo
             throw new MojoExecutionException( "An error has ocurried while recording config-report for resource module" );
         }
 
-        projectHelper.attachArtifact( project, RB_SWC, locale, output );
+        projectHelper.attachArtifact( project, FlexExtension.RB_SWC.toString(), locale, output );
     }
 
     @Override

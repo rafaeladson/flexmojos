@@ -21,7 +21,6 @@
 package org.sonatype.flexmojos.test.launcher;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
@@ -54,6 +53,10 @@ public class AsVmLauncherTest
             Thread.sleep( 100 );
         }
         while ( !( ThreadStatus.DONE.equals( launcher.getStatus() ) || ThreadStatus.ERROR.equals( launcher.getStatus() ) ) );
+        
+        if ( launcher.getError() != null ) {
+        	launcher.getError().printStackTrace();
+        }
 
         assertEquals( launcher.getStatus(), ThreadStatus.DONE, "tmp: "
             + Arrays.toString( new File( "/tmp" ).listFiles() ) );
@@ -69,29 +72,32 @@ public class AsVmLauncherTest
         if ( true )
             throw new SkipException( "Know failure, need more investigation" );
 
-        launcher.start( INVALID_SWF );
-
-        do
-        {
-            Thread.yield();
-            Thread.sleep( 100 );
-        }
-        while ( !ThreadStatus.RUNNING.equals( launcher.getStatus() ) );
-
-        Thread.yield();
-        Thread.sleep( 2000 );// give some extra time
-
-        launcher.stop();
-
-        Thread.yield();
-        Thread.sleep( 2000 );// give some extra time
-
-        String log = launcher.getConsoleOutput();
-        assertTrue( log.contains( "SWF Created!" ), "Log: " + log + " - Status: " + launcher.getStatus() );
-
-        assertEquals( ThreadStatus.ERROR, launcher.getStatus() );
-        assertNotNull( launcher.getError() );
+//        launcher.start( INVALID_SWF );
+//
+//        do
+//        {
+//            Thread.yield();
+//            Thread.sleep( 100 );
+//        }
+//        while ( !ThreadStatus.RUNNING.equals( launcher.getStatus() ) );
+//
+//        Thread.yield();
+//        Thread.sleep( 2000 );// give some extra time
+//
+//        launcher.stop();
+//
+//        Thread.yield();
+//        Thread.sleep( 2000 );// give some extra time
+//
+//        String log = launcher.getConsoleOutput();
+//        assertTrue( log.contains( "SWF Created!" ), "Log: " + log + " - Status: " + launcher.getStatus() );
+//
+//        assertEquals( ThreadStatus.ERROR, launcher.getStatus() );
+//        assertNotNull( launcher.getError() );
     }
+    
+    
+    
 
     @Test( timeOut = 20000 )
     public void fakeSwf()

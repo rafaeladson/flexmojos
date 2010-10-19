@@ -7,10 +7,10 @@
  */
 package org.sonatype.flexmojos.flexbuilder;
 
-import static org.sonatype.flexmojos.common.FlexExtension.AIR;
-import static org.sonatype.flexmojos.common.FlexExtension.RB_SWC;
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
+import static org.sonatype.flexmojos.commons.FlexExtension.AIR;
+import static org.sonatype.flexmojos.commons.FlexExtension.RB_SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWF;
 import static org.sonatype.flexmojos.compatibilitykit.VersionUtils.isMinVersionOK;
 import static org.sonatype.flexmojos.compatibilitykit.VersionUtils.splitVersion;
 
@@ -48,6 +48,8 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.velocity.VelocityComponent;
 import org.sonatype.flexmojos.common.FlexScopes;
+import org.sonatype.flexmojos.commons.FlexExtension;
+import org.sonatype.flexmojos.commons.ProjectType;
 import org.sonatype.flexmojos.compatibilitykit.FlexMojo;
 import org.sonatype.flexmojos.flexbuilder.sdk.LinkType;
 import org.sonatype.flexmojos.flexbuilder.sdk.LocalSdk;
@@ -653,7 +655,7 @@ public class FlexbuilderMojo
 
         // Get project type
         ProjectType type =
-            ProjectType.getProjectType( project.getPackaging(), isUseApolloConfig(), pureActionscriptProject );
+            ProjectType.getProjectType( FlexExtension.get(project.getPackaging()), isUseApolloConfig(), pureActionscriptProject );
 
         // Initialize new Local SDK to help with the dependency cleaning process.
         sdk = new LocalSdk( getCompilerVersion(), type, getLog() );

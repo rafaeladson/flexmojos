@@ -36,7 +36,7 @@ package org.sonatype.flexmojos.compiler;
  * limitations under the License.
  */
 import static java.util.Arrays.asList;
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWF;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,6 +50,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.jvnet.animal_sniffer.IgnoreJRERequirement;
+import org.sonatype.flexmojos.commons.FlexExtension;
 import org.sonatype.flexmojos.compatibilitykit.FlexCompatibility;
 import org.sonatype.flexmojos.test.util.PathUtil;
 import org.sonatype.flexmojos.truster.FlashPlayerTruster;
@@ -188,7 +189,7 @@ public class SwfMojo
 
             callCompiler( moduleBuilder, false );
 
-            projectHelper.attachArtifact( project, SWF, moduleName, outputModule );
+            projectHelper.attachArtifact( project, FlexExtension.SWF.toString(), moduleName, outputModule );
 
         }
     }
@@ -409,7 +410,7 @@ public class SwfMojo
     {
         // Dont break this method in parts, is a work around
 
-        File output = getRuntimeLocaleOutputFile( locale, SWF );
+        File output = getRuntimeLocaleOutputFile( locale, FlexExtension.SWF.toString() );
 
         /*
          * mxmlc -locale=en_US -source-path=locale/{locale} -include-resource-bundles
@@ -472,7 +473,7 @@ public class SwfMojo
         forkMxmlc( args );
         runMxmlc( args );
 
-        projectHelper.attachArtifact( project, SWF, locale, output );
+        projectHelper.attachArtifact( project, FlexExtension.SWF.toString(), locale, output );
     }
 
     @FlexCompatibility( minVersion = "3.2" )
@@ -481,7 +482,7 @@ public class SwfMojo
         throws MojoExecutionException
     {
         Application rbBuilder = new Application();
-        File output = getRuntimeLocaleOutputFile( locale, SWF );
+        File output = getRuntimeLocaleOutputFile( locale, FlexExtension.SWF.toString());
 
         rbBuilder.setLogger( new MavenLogger( getLog() ) );
         rbBuilder.setOutput( output );
@@ -518,7 +519,7 @@ public class SwfMojo
             }
         }
 
-        projectHelper.attachArtifact( project, SWF, locale, output );
+        projectHelper.attachArtifact( project, FlexExtension.SWF.toString(), locale, output );
     }
 
 }

@@ -281,6 +281,12 @@
       <artifactId>jgoogleanalytics</artifactId>
       <version>0.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.sonatype.flexmojos</groupId>
+      <artifactId>flexmojos-commons</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
   </dependencies>
 
   <reporting>

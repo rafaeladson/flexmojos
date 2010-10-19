@@ -25,8 +25,9 @@ import java.net.URISyntaxException;
 
 import org.codehaus.plexus.PlexusTestNGCase;
 import org.codehaus.plexus.context.Context;
+import org.sonatype.flexmojos.commons.OSDetector;
+import org.sonatype.flexmojos.commons.ProjectType;
 import org.sonatype.flexmojos.test.TestRequest;
-import org.sonatype.flexmojos.test.util.OSUtils;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -46,8 +47,10 @@ public class AbstractAsVmLauncherTest
         {
             VALID_SWF = new TestRequest();
             VALID_SWF.setSwf( new File( AsVmLauncherTest.class.getResource( "/SelftExit.swf" ).toURI() ) );
+            VALID_SWF.setProjectType(ProjectType.FLEX);
             INVALID_SWF = new TestRequest();
             INVALID_SWF.setSwf( new File( AsVmLauncherTest.class.getResource( "/NonExit.swf" ).toURI() ) );
+            INVALID_SWF.setProjectType(ProjectType.FLEX);
         }
         catch ( URISyntaxException e )
         {
@@ -74,7 +77,7 @@ public class AbstractAsVmLauncherTest
     {
         super.customizeContext( context );
 
-        context.put( "flashplayer.command", OSUtils.getPlatformDefaultCommand() );
+        context.put( "flashplayer.command", new OSDetector().getPlatformDefaultCommand() );
     }
 
 }

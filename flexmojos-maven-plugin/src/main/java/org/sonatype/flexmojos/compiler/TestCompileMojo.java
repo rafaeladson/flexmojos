@@ -40,7 +40,7 @@ import org.apache.maven.artifact.resolver.AbstractArtifactResolutionException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.sonatype.flexmojos.common.FlexExtension;
+import org.sonatype.flexmojos.commons.FlexExtension;
 import org.sonatype.flexmojos.utilities.MavenUtils;
 
 import flex2.tools.oem.Application;

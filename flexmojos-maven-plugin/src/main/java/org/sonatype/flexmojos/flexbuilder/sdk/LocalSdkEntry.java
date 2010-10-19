@@ -2,8 +2,8 @@ package org.sonatype.flexmojos.flexbuilder.sdk;
 
 import org.apache.maven.plugin.ide.IdeDependency;
 import org.sonatype.flexmojos.common.FlexScopes;
+import org.sonatype.flexmojos.commons.ProjectType;
 import org.sonatype.flexmojos.flexbuilder.FbIdeDependency;
-import org.sonatype.flexmojos.flexbuilder.ProjectType;
 
 public class LocalSdkEntry
     implements Comparable<LocalSdkEntry>

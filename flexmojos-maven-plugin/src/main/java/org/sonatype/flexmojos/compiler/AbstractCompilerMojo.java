@@ -20,9 +20,7 @@
  */
 package org.sonatype.flexmojos.compiler;
 
-import static org.sonatype.flexmojos.common.FlexExtension.RB_SWC;
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
-import static org.sonatype.flexmojos.common.FlexExtension.SWZ;
+import static org.sonatype.flexmojos.commons.FlexExtension.RB_SWC;
 import static org.sonatype.flexmojos.compatibilitykit.VersionUtils.isMinVersionOK;
 import static org.sonatype.flexmojos.compatibilitykit.VersionUtils.splitVersion;
 import static org.sonatype.flexmojos.utilities.MavenUtils.searchFor;
@@ -72,6 +70,7 @@ import org.jvnet.animal_sniffer.IgnoreJRERequirement;
 import org.sonatype.flexmojos.AbstractIrvinMojo;
 import org.sonatype.flexmojos.common.FlexClassifier;
 import org.sonatype.flexmojos.common.FlexScopes;
+import org.sonatype.flexmojos.commons.FlexExtension;
 import org.sonatype.flexmojos.compatibilitykit.FlexCompatibility;
 import org.sonatype.flexmojos.compatibilitykit.FlexMojo;
 import org.sonatype.flexmojos.test.util.PathUtil;
@@ -1061,11 +1060,11 @@ public abstract class AbstractCompilerMojo<E extends Builder>
         String extension;
         if ( CACHING.equals( scope ) )
         {
-            extension = SWZ;
+            extension = FlexExtension.SWC.toString();
         }
         else
         {
-            extension = SWF;
+            extension = FlexExtension.SWF.toString();
         }
         String[] rslUrls = getRslUrls( artifact, extension );
         String[] rslPolicyFileUrls = getRslPolicyFileUrls( artifact );

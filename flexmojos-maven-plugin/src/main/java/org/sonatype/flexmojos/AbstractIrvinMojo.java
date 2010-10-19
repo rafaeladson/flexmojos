@@ -20,7 +20,7 @@
  */
 package org.sonatype.flexmojos;
 
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWC;
 
 import java.io.File;
 import java.io.IOException;

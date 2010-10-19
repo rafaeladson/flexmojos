@@ -20,15 +20,16 @@
  */
 package org.sonatype.flexmojos.configGenerator;
 
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWF;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.sonatype.flexmojos.common.FlexClassifier;
-import org.sonatype.flexmojos.compiler.SwfMojo;
+import org.sonatype.flexmojos.commons.FlexExtension;
 import org.sonatype.flexmojos.compiler.FlexConfigBuilder;
+import org.sonatype.flexmojos.compiler.SwfMojo;
 import org.sonatype.flexmojos.test.util.PathUtil;
 import org.sonatype.flexmojos.utilities.MavenUtils;
 
@@ -111,7 +112,7 @@ public class ApplicationFlexConfigGeneratorMojo
     {
         FlexConfigBuilder configBuilder =
             createFlexConfigBuilderWithoutBuild( getResourceBundleConfiguration( bundlesNames, locale, localePath ) );
-        File output = getRuntimeLocaleOutputFile( locale, SWF );
+        File output = getRuntimeLocaleOutputFile( locale, FlexExtension.SWF.toString() );
         // https://bugs.adobe.com/jira/browse/FCM-15
         configBuilder.addOutput( output, new File( build.getDirectory() ) );
         try
@@ -123,7 +124,7 @@ public class ApplicationFlexConfigGeneratorMojo
             throw new MojoExecutionException( "An error has ocurried while recording config-report for resource module" );
         }
 
-        projectHelper.attachArtifact( project, SWF, locale, output );
+        projectHelper.attachArtifact( project, FlexExtension.SWF.toString(), locale, output );
     }
 
     @Override

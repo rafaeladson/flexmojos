@@ -20,8 +20,8 @@
  */
 package org.sonatype.flexmojos.optimizer;
 
-import static org.sonatype.flexmojos.common.FlexExtension.SWC;
-import static org.sonatype.flexmojos.common.FlexExtension.SWF;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.SWF;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,6 +46,7 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.sonatype.flexmojos.MavenMojo;
+import org.sonatype.flexmojos.commons.FlexExtension;
 
 import flex2.compiler.swc.Digest;
 import flex2.compiler.swc.Swc;
@@ -119,7 +120,7 @@ public class OptimizerMojo
         }
 
         getLog().debug( "attaching original swf" );
-        projectHelper.attachArtifact( project, SWF, "original", bkpOriginalFile );
+        projectHelper.attachArtifact( project, FlexExtension.SWF.toString(), "original", bkpOriginalFile );
         return bkpOriginalFile;
     }
 
@@ -215,7 +216,7 @@ public class OptimizerMojo
                 updateDigest( optimizedSWFFile, originalFile );
 
                 getLog().debug( "attaching Artifact " );
-                projectHelper.attachArtifact( project, SWF, optimizedSWFFile );
+                projectHelper.attachArtifact( project, FlexExtension.SWF.toString(), optimizedSWFFile );
             }
         }
         catch ( FileNotFoundException e )

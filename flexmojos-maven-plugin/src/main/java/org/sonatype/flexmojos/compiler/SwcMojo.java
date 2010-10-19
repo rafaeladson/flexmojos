@@ -20,7 +20,7 @@
  */
 package org.sonatype.flexmojos.compiler;
 
-import static org.sonatype.flexmojos.common.FlexExtension.RB_SWC;
+import static org.sonatype.flexmojos.commons.FlexExtension.RB_SWC;
 
 import java.io.File;
 import java.net.URI;
@@ -36,6 +36,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.jvnet.animal_sniffer.IgnoreJRERequirement;
+import org.sonatype.flexmojos.commons.FlexExtension;
 import org.sonatype.flexmojos.compatibilitykit.FlexCompatibility;
 import org.sonatype.flexmojos.test.util.PathUtil;
 import org.sonatype.flexmojos.utilities.MavenUtils;
@@ -507,7 +508,7 @@ public class SwcMojo
             localized.addResourceBundle( bundle );
         }
 
-        File output = getRuntimeLocaleOutputFile( locale, RB_SWC );
+        File output = getRuntimeLocaleOutputFile( locale, FlexExtension.RB_SWC.toString() );
 
         localized.setOutput( output );
 
@@ -528,7 +529,7 @@ public class SwcMojo
             }
         }
 
-        projectHelper.attachArtifact( project, RB_SWC, locale, output );
+        projectHelper.attachArtifact( project, FlexExtension.RB_SWC.toString(), locale, output );
     }
 
 }
