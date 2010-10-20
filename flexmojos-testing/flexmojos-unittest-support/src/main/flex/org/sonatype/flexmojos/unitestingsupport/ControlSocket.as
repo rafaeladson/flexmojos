@@ -24,9 +24,10 @@ package org.sonatype.flexmojos.unitestingsupport
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
 	import flash.net.Socket;
-    import flash.system.fscommand;
+	import flash.system.fscommand;
 
-    import org.sonatype.flexmojos.test.monitor.CommConstraints;
+	import org.sonatype.flexmojos.test.monitor.CommConstraints;
+	import flash.desktop.NativeApplication;
 	
 	public class ControlSocket
 	{
@@ -54,7 +55,18 @@ package org.sonatype.flexmojos.unitestingsupport
 			//Exiting
 			trace("Exiting");
 			fscommand("quit");
+			
+			
+			var exitingEvent:Event=new Event(Event.EXITING, false, true);
+			NativeApplication.nativeApplication.dispatchEvent(exitingEvent);
+			if (!exitingEvent.isDefaultPrevented()) {
+				NativeApplication.nativeApplication.exit();
+			}
+			
 		}
+
+			
+		
 
 		/**
 		 * Event listener to handle data received on the socket.
