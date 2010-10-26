@@ -624,7 +624,7 @@ public abstract class AbstractMavenMojo
         return artifact;
     }
 
-    protected String[] resolveFlashVM( String command, MavenArtifact gav, String defaultArtifactId, String version )
+    protected String[] resolveFlashVM( String command, MavenArtifact gav, String defaultArtifactId, String version, boolean isAirProject )
     {
         if ( command != null )
         {
@@ -697,15 +697,22 @@ public abstract class AbstractMavenMojo
         {
             getLog().debug( "Flexmojos was not able to resolve " + defaultArtifactId + " delegating the job to OS!" );
 
-            return null;
+            if ( isAirProject ) 
+            {
+            	return OSUtils.getPlatformDefaultAdl(); 
+            }
+            else 
+            {
+            	return OSUtils.getPlatformDefaultFlashPlayer();
+            }
         }
     }
 
     protected String[] resolveAdlVm( String command, MavenArtifact vmGav, String defaultArtifactId, String version,
-                                     MavenArtifact runtimeGav )
+                                     MavenArtifact runtimeGav, boolean isAirProject )
     {
 
-        String[] vm = resolveFlashVM( command, vmGav, defaultArtifactId, version );
+        String[] vm = resolveFlashVM( command, vmGav, defaultArtifactId, version, isAirProject );
 
         if ( runtimeGav == null )
         {
@@ -735,7 +742,7 @@ public abstract class AbstractMavenMojo
             runtimeGav.setVersion( version );
         }
 
-        // adl nedds air runtime, so lets grab it...
+        // adl needs air runtime, so lets grab it...
         File runtime =
             getUnpackedArtifact( runtimeGav.getGroupId(), runtimeGav.getArtifactId(), runtimeGav.getVersion(),
                                  runtimeGav.getClassifier(), runtimeGav.getType() );

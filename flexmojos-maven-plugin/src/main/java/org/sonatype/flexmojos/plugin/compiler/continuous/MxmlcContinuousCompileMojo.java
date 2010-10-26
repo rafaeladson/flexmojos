@@ -185,13 +185,13 @@ public class MxmlcContinuousCompileMojo
         testRequest.setUseAirDebugLauncher( isAirProject );
         if ( isAirProject )
         {
-            testRequest.setAdlCommand( resolveAdlVm( adlCommand, adlGav, "adl", getAirTarget(), adlRuntimeGav ) );
+            testRequest.setAdlCommand( resolveAdlVm( adlCommand, adlGav, "adl", getAirTarget(), adlRuntimeGav, true ) );
             testRequest.setSwfDescriptor( createSwfDescriptor( swf ) );
         }
         else
         {
             testRequest.setFlashplayerCommand( resolveFlashVM( flashPlayerCommand, flashPlayerGav, "flashplayer",
-                                                               getTargetPlayer() == null ? "10.1" : getTargetPlayer() ) );
+                                                               getTargetPlayer() == null ? "10.1" : getTargetPlayer(), true ) );
         }
 
         vmLauncher.start( testRequest );
