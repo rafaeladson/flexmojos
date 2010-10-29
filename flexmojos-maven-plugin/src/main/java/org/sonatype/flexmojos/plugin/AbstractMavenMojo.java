@@ -624,7 +624,7 @@ public abstract class AbstractMavenMojo
         return artifact;
     }
 
-    protected String[] resolveFlashVM( String command, MavenArtifact gav, String defaultArtifactId, String version, boolean isAirProject )
+    protected String[] resolveFlashVM( String command, MavenArtifact gav, String defaultArtifactId, String version)
     {
         if ( command != null )
         {
@@ -696,23 +696,21 @@ public abstract class AbstractMavenMojo
         else
         {
             getLog().debug( "Flexmojos was not able to resolve " + defaultArtifactId + " delegating the job to OS!" );
+            return null;
 
-            if ( isAirProject ) 
-            {
-            	return OSUtils.getPlatformDefaultAdl(); 
-            }
-            else 
-            {
-            	return OSUtils.getPlatformDefaultFlashPlayer();
-            }
+
         }
     }
 
     protected String[] resolveAdlVm( String command, MavenArtifact vmGav, String defaultArtifactId, String version,
-                                     MavenArtifact runtimeGav, boolean isAirProject )
+                                     MavenArtifact runtimeGav)
     {
 
-        String[] vm = resolveFlashVM( command, vmGav, defaultArtifactId, version, isAirProject );
+        String[] vm = resolveFlashVM( command, vmGav, defaultArtifactId, version);
+        
+        if ( vm == null ) {
+        	return null;
+        }
 
         if ( runtimeGav == null )
         {

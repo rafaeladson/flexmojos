@@ -347,13 +347,13 @@ public class TestRunMojo
                 testRequest.setUseAirDebugLauncher( isAirProject );
                 if ( isAirProject )
                 {
-                    testRequest.setAdlCommand( resolveAdlVm( adlCommand, adlGav, "adl", getAirTarget(), adlRuntimeGav, isAirProject ) );
+                    testRequest.setAdlCommand( resolveAdlVm( adlCommand, adlGav, "adl", getAirTarget(), adlRuntimeGav) );
                     testRequest.setSwfDescriptor( createSwfDescriptor( swf ) );
                 }
                 else
                 {
                     testRequest.setFlashplayerCommand( resolveFlashVM( flashPlayerCommand, flashPlayerGav,
-                                                                       "flashplayer", targetPlayer, isAirProject ) );
+                                                                       "flashplayer", targetPlayer) );
                 }
 
                 if ( coverage )
