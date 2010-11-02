@@ -7,9 +7,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonatype.flexmojos.matcher.artifact.ArtifactMatcher.artifactId;
 import static org.sonatype.flexmojos.matcher.artifact.ArtifactMatcher.classifier;
-import static org.sonatype.flexmojos.matcher.artifact.ArtifactMatcher.groupId;
 import static org.sonatype.flexmojos.matcher.artifact.ArtifactMatcher.scope;
 import static org.sonatype.flexmojos.matcher.artifact.ArtifactMatcher.type;
 import static org.sonatype.flexmojos.plugin.common.FlexClassifier.CONFIGS;
@@ -1378,16 +1376,6 @@ public abstract class AbstractFlexCompilerMojo<CFG, C extends AbstractFlexCompil
     private String translationFormat;
 
     /**
-     * Determines whether resources bundles are included in the application
-     * <p>
-     * Equivalent to -compiler.use-resource-bundle-metadata
-     * </p>
-     * 
-     * @parameter expression="${flex.useResourceBundleMetadata}"
-     */
-    private Boolean useResourceBundleMetadata;
-
-    /**
      * Toggle whether the SWF is flagged for access to network resources
      * <p>
      * Equivalent to -use-network
@@ -1396,6 +1384,16 @@ public abstract class AbstractFlexCompilerMojo<CFG, C extends AbstractFlexCompil
      * @parameter expression="${flex.useNetwork}"
      */
     private Boolean useNetwork;
+
+    /**
+     * Determines whether resources bundles are included in the application
+     * <p>
+     * Equivalent to -compiler.use-resource-bundle-metadata
+     * </p>
+     * 
+     * @parameter expression="${flex.useResourceBundleMetadata}"
+     */
+    private Boolean useResourceBundleMetadata;
 
     /**
      * Save callstack information to the SWF for debugging
@@ -2150,42 +2148,6 @@ public abstract class AbstractFlexCompilerMojo<CFG, C extends AbstractFlexCompil
         return framework;
     }
 
-    @SuppressWarnings( "unchecked" )
-    protected String getFrameworkVersion()
-    {
-        Artifact dep = null;
-        if ( dep == null )
-        {
-            dep = getDependency( groupId( "com.adobe.flex.framework" ), artifactId( "playerglobal" ), type( "swc" ) );
-        }
-        if ( dep == null )
-        {
-            dep = getDependency( groupId( "com.adobe.flex.framework" ), artifactId( "airglobal" ), type( "swc" ) );
-        }
-        if ( dep == null )
-        {
-            dep = getDependency( groupId( "com.adobe.flex.framework" ), artifactId( "flex-framework" ), type( "pom" ) );
-        }
-        if ( dep == null )
-        {
-            dep = getDependency( groupId( "com.adobe.flex.framework" ), artifactId( "air-framework" ), type( "pom" ) );
-        }
-        if ( dep == null )
-        {
-            getDependency( groupId( "com.adobe.flex.framework" ), artifactId( "framework" ), type( "swc" ) );
-        }
-        if ( dep == null )
-        {
-            getDependency( groupId( "com.adobe.flex.framework" ), artifactId( "airframework" ), type( "swc" ) );
-        }
-
-        if ( dep == null )
-        {
-            return null;
-        }
-        return dep.getVersion();
-    }
-
     public Boolean getGenerateAbstractSyntaxTree()
     {
         return generateAbstractSyntaxTree;
@@ -2513,12 +2475,7 @@ public abstract class AbstractFlexCompilerMojo<CFG, C extends AbstractFlexCompil
             return new String[] {};
         }
 
-        if ( SWC.equals( getProjectType() ) )
-        {
-            return new String[] {};
-        }
-
-        return new String[] { toolsLocale };
+        return null;
     }
 
     public String[] getLocalesRuntime()
