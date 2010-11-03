@@ -663,6 +663,11 @@ public abstract class AbstractMavenMojo
         	return null;
         }
 
+        if ( vm == null )
+        {
+            return null;
+        }
+
         if ( runtimeGav == null )
         {
             runtimeGav = new MavenArtifact();
