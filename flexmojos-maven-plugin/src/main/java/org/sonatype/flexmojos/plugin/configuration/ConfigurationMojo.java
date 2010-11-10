@@ -2,6 +2,8 @@ package org.sonatype.flexmojos.plugin.configuration;
 
 import static org.sonatype.flexmojos.plugin.common.FlexExtension.SWC;
 
+import java.io.File;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +13,9 @@ import org.sonatype.flexmojos.compiler.ICommandLineConfiguration;
 import org.sonatype.flexmojos.compiler.ICompcConfiguration;
 import org.sonatype.flexmojos.compiler.command.Result;
 import org.sonatype.flexmojos.configurator.Configurator;
+import org.sonatype.flexmojos.configurator.ConfiguratorException;
 import org.sonatype.flexmojos.plugin.compiler.CompcMojo;
+import org.sonatype.flexmojos.plugin.utilities.SourceFileResolver;
 
 /**
  * <p>
@@ -69,6 +73,20 @@ public class ConfigurationMojo
      */
     private String projector;
 
+    /**
+     * Extra parameters that will be injected onto configurator
+     * 
+     * <pre>
+     * &lt;parameters&gt;
+     *   &lt;extra&gt;???&lt;/extra&gt;
+     *   &lt;plus&gt;???&lt;/plus&gt;
+     * &lt;/parameters&gt;
+     * </pre>
+     * 
+     * @parameters
+     */
+    private Map<String, Object> parameters;
+
     @Override
     public Result doCompile( ICompcConfiguration cfg, boolean synchronize )
         throws Exception
@@ -105,13 +123,27 @@ public class ConfigurationMojo
             }
         }
 
-        if ( SWC.equals( getProjectType() ) )
+        if ( parameters == null )
         {
-            cfg.buildConfiguration( (ICompcConfiguration) this );
+            parameters = new LinkedHashMap<String, Object>();
         }
-        else
+        parameters.put( "project", project );
+        parameters.put( "classifier", classifier );
+
+        try
         {
-            cfg.buildConfiguration( (ICommandLineConfiguration) this );
+            if ( SWC.equals( getProjectType() ) )
+            {
+                cfg.buildConfiguration( (ICompcConfiguration) this, parameters );
+            }
+            else
+            {
+                cfg.buildConfiguration( (ICommandLineConfiguration) this, getSourceFile(), parameters );
+            }
+        }
+        catch ( ConfiguratorException e )
+        {
+            throw new MojoExecutionException( "Failed to execute configurator: " + e.getMessage(), e );
         }
     }
 
@@ -129,6 +161,19 @@ public class ConfigurationMojo
     public String getProjectType()
     {
         return packaging;
+    }
+
+    /**
+     * The file to be compiled. The path must be relative with source folder
+     * 
+     * @parameter expression="${flex.sourceFile}"
+     */
+    private String sourceFile;
+
+    protected File getSourceFile()
+    {
+        return SourceFileResolver.resolveSourceFile( project.getCompileSourceRoots(), sourceFile, project.getGroupId(),
+                                                     project.getArtifactId() );
     }
 
 }
