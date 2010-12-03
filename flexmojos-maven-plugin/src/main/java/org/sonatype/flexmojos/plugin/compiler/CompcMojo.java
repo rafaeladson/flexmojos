@@ -30,7 +30,7 @@ import org.sonatype.flexmojos.util.PathUtil;
  * </p>
  * 
  * @author Marvin Herman Froeder (velo.br@gmail.com)
- * @since 4.0
+ * @since 1.0
  * @goal compile-swc
  * @requiresDependencyResolution compile
  * @phase compile
@@ -279,24 +279,6 @@ public class CompcMojo
         else
         {
             patterns.addAll( includeFiles.getPatterns() );
-
-            for ( final String path : includeFiles.getIncludes() )
-            {
-                final File file = PathUtil.file( path, getResourcesTargetDirectories() );
-
-                files.add( new IIncludeFile()
-                {
-                    public String name()
-                    {
-                        return path.replace( '\\', '/' );
-                    }
-
-                    public String path()
-                    {
-                        return file.getAbsolutePath();
-                    }
-                } );
-            }
         }
 
         for ( FileSet pattern : patterns )
@@ -313,7 +295,7 @@ public class CompcMojo
                 {
                     public String name()
                     {
-                        return file;
+                        return file.replace('\\', '/');
                     }
 
                     public String path()

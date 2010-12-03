@@ -17,7 +17,11 @@ target/
 
 # Intellij
 *.ipr
+*.iml
+*.iws
 
 # Other
 .svn/
 bin/
+
+.scala_dependencies
