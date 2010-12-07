@@ -278,7 +278,27 @@ public class CompcMojo
         }
         else
         {
+            // process patterns
             patterns.addAll( includeFiles.getPatterns() );
+
+            // process files
+            for ( final String path : includeFiles.getIncludes() )
+            {
+                final File file = PathUtil.file( path, getResourcesTargetDirectories() );
+
+                files.add( new IIncludeFile()
+                {
+                    public String name()
+                    {
+                        return path.replace( '\\', '/' );
+                    }
+
+                    public String path()
+                    {
+                        return file.getAbsolutePath();
+                    }
+                } );
+            }
         }
 
         for ( FileSet pattern : patterns )
@@ -295,7 +315,7 @@ public class CompcMojo
                 {
                     public String name()
                     {
-                        return file.replace('\\', '/');
+                        return file.replace( '\\', '/' );
                     }
 
                     public String path()
