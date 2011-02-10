@@ -1,8 +1,12 @@
 package org.sonatype.flexmojos.plugin.compiler;
 
+import static org.sonatype.flexmojos.plugin.common.FlexExtension.*;
+import static org.sonatype.flexmojos.plugin.common.FlexScopes.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.sonatype.flexmojos.matcher.artifact.ArtifactMatcher.*;
 import static org.sonatype.flexmojos.util.CollectionUtils.*;
-import static org.sonatype.flexmojos.plugin.common.FlexExtension.SWF;
 import static org.sonatype.flexmojos.util.PathUtil.file;
+import org.sonatype.flexmojos.plugin.utilities.MavenUtils;
 
 import java.io.File;
 import java.util.ArrayList;
