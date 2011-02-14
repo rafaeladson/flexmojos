@@ -7,17 +7,25 @@ import static org.sonatype.flexmojos.matcher.artifact.ArtifactMatcher.*;
 import static org.sonatype.flexmojos.util.CollectionUtils.*;
 import static org.sonatype.flexmojos.util.PathUtil.file;
 import org.sonatype.flexmojos.plugin.utilities.MavenUtils;
+import org.sonatype.flexmojos.plugin.utilities.RslSorter;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.DefaultMavenProjectBuilder;
 import org.sonatype.flexmojos.compiler.ICommandLineConfiguration;
+import org.sonatype.flexmojos.compiler.IRuntimeSharedLibraryPath;
 import org.sonatype.flexmojos.compiler.MxmlcConfigurationHolder;
 import org.sonatype.flexmojos.compiler.command.Result;
 import org.sonatype.flexmojos.plugin.compiler.attributes.converter.Module;
@@ -27,11 +35,12 @@ import org.sonatype.flexmojos.util.PathUtil;
 
 /**
  * <p>
- * Goal which compiles the Flex sources into an application for either Flex or AIR depending on the package type.
+ * Goal which compiles the Flex sources into an application for either Flex or
+ * AIR depending on the package type.
  * </p>
  * <p>
- * The Flex Compiler plugin compiles all ActionScript sources. It can compile the source into 'swf' files. The plugin
- * supports 'swf' packaging.
+ * The Flex Compiler plugin compiles all ActionScript sources. It can compile
+ * the source into 'swf' files. The plugin supports 'swf' packaging.
  * </p>
  * 
  * @author Marvin Herman Froeder (velo.br@gmail.com)
@@ -42,246 +51,261 @@ import org.sonatype.flexmojos.util.PathUtil;
  * @configurator flexmojos
  * @threadSafe
  */
-public class MxmlcMojo
-    extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder, MxmlcMojo>
-    implements ICommandLineConfiguration, Mojo
-{
+public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder, MxmlcMojo> implements
+		ICommandLineConfiguration, Mojo {
 
-    /**
-     * DOCME Again, undocumented by adobe
-     * <p>
-     * Equivalent to -file-specs
-     * </p>
-     * Usage:
-     * 
-     * <pre>
-     * &lt;fileSpecs&gt;
-     *   &lt;fileSpec&gt;???&lt;/fileSpec&gt;
-     *   &lt;fileSpec&gt;???&lt;/fileSpec&gt;
-     * &lt;/fileSpecs&gt;
-     * </pre>
-     * 
-     * @parameter
-     */
-    private List<String> fileSpecs;
+	/**
+	 * DOCME Again, undocumented by adobe
+	 * <p>
+	 * Equivalent to -file-specs
+	 * </p>
+	 * Usage:
+	 * 
+	 * <pre>
+	 * &lt;fileSpecs&gt;
+	 *   &lt;fileSpec&gt;???&lt;/fileSpec&gt;
+	 *   &lt;fileSpec&gt;???&lt;/fileSpec&gt;
+	 * &lt;/fileSpecs&gt;
+	 * </pre>
+	 * 
+	 * @parameter
+	 */
+	private List<String> fileSpecs;
 
-    /**
-     * The list of modules to be compiled.
-     * 
-     * <pre>
-     * &lt;modules&gt;
-     *   &lt;module&gt;Module1.mxml&lt;/module&gt;
-     *   &lt;module&gt;Module2.mxml&lt;/module&gt;
-     *   &lt;module&gt;
-     *     &lt;sourceFile&gt;Module3.mxml&lt;/sourceFile&gt;
-     *     &lt;optimize&gt;false&lt;/optimize&gt;
-     *     &lt;finalName&gt;MyModule&lt;/finalName&gt;
-     *     &lt;destinationPath&gt;dir1/dir2&lt;/destinationPath&gt;
-     *   &lt;/module&gt;
-     * &lt;/modules&gt;
-     * </pre>
-     * 
-     * @parameter
-     */
-    private Module[] modules;
+	/**
+	 * The list of modules to be compiled.
+	 * 
+	 * <pre>
+	 * &lt;modules&gt;
+	 *   &lt;module&gt;Module1.mxml&lt;/module&gt;
+	 *   &lt;module&gt;Module2.mxml&lt;/module&gt;
+	 *   &lt;module&gt;
+	 *     &lt;sourceFile&gt;Module3.mxml&lt;/sourceFile&gt;
+	 *     &lt;optimize&gt;false&lt;/optimize&gt;
+	 *     &lt;finalName&gt;MyModule&lt;/finalName&gt;
+	 *     &lt;destinationPath&gt;dir1/dir2&lt;/destinationPath&gt;
+	 *   &lt;/module&gt;
+	 * &lt;/modules&gt;
+	 * </pre>
+	 * 
+	 * @parameter
+	 */
+	private Module[] modules;
 
-    /**
-     * When true, tells flexmojos to optimized modules using link reports/load externs
-     * 
-     * @parameter expression="${flex.modulesLoadExterns}" default-value="true"
-     */
-    private boolean modulesLoadExterns;
+	/**
+	 * When true, tells flexmojos to optimized modules using link reports/load
+	 * externs
+	 * 
+	 * @parameter expression="${flex.modulesLoadExterns}" default-value="true"
+	 */
+	private boolean modulesLoadExterns;
 
-    /**
-     * DOCME Another, undocumented by adobe
-     * <p>
-     * Equivalent to -projector
-     * </p>
-     * 
-     * @parameter expression="${flex.projector}"
-     */
-    private String projector;
+	/**
+	 * DOCME Another, undocumented by adobe
+	 * <p>
+	 * Equivalent to -projector
+	 * </p>
+	 * 
+	 * @parameter expression="${flex.projector}"
+	 */
+	private String projector;
 
-    /**
-     * The file to be compiled. The path must be relative with source folder
-     * 
-     * @parameter expression="${flex.sourceFile}"
-     */
-    private String sourceFile;
+	/**
+	 * The file to be compiled. The path must be relative with source folder
+	 * 
+	 * @parameter expression="${flex.sourceFile}"
+	 */
+	private String sourceFile;
 
-    /**
-     * @component
-     * @required
-     * @readonly
-     */
-    private FlashPlayerTruster truster;
+	/**
+	 * @component
+	 * @required
+	 * @readonly
+	 */
+	private FlashPlayerTruster truster;
 
-    /**
-     * When true, flexmojos will register register every compiled SWF files as trusted. These SWF files are assigned to
-     * the local-trusted sandbox. They can interact with any other SWF files, and they can load data from anywhere,
-     * remote or local. On false nothing is done, so if the file is already trusted it will still as it is.
-     * 
-     * @parameter default-value="true" expression="${updateSecuritySandbox}"
-     */
-    private boolean updateSecuritySandbox;
+	/**
+	 * @parameter 
+	 *            expression="${component.org.apache.maven.project.MavenProjectBuilder}"
+	 * @required
+	 * @readonly
+	 */
+	protected DefaultMavenProjectBuilder projectBuilder;
 
-    public final Result doCompile( MxmlcConfigurationHolder cfg, boolean synchronize )
-        throws Exception
-    {
-        if ( isUpdateSecuritySandbox() )
-        {
-            truster.updateSecuritySandbox( PathUtil.file( cfg.getConfiguration().getOutput() ) );
-        }
-        return compiler.compileSwf( cfg, synchronize );
-    }
+	/**
+	 * Artifact factory, needed to download source jars for inclusion in
+	 * classpath.
+	 * 
+	 * @component role="org.apache.maven.artifact.factory.ArtifactFactory"
+	 * @required
+	 * @readonly
+	 */
+	protected ArtifactFactory artifactFactory;
 
-    public void execute()
-        throws MojoExecutionException, MojoFailureException
-    {
-        if ( !PathUtil.existAny( getSourcePath() ) )
-        {
-            getLog().warn( "Skipping compiler, source path doesn't exist. " + Arrays.toString( getSourcePath() ) );
-            return;
-        }
+	/**
+	 * @component
+	 */
+	protected ArtifactResolver resolver;
 
-        executeCompiler( new MxmlcConfigurationHolder( this, getSourceFile() ), true );
-        if ( !file( getOutput() ).exists() )
-        {
-            throw new IllegalStateException( "Output file doesn't exist and now error was throw by the compiler!" );
-        }
+	/**
+	 * @component 
+	 *            role="org.apache.maven.artifact.metadata.ArtifactMetadataSource"
+	 *            hint="maven"
+	 */
+	protected ArtifactMetadataSource artifactMetadataSource;
 
-        if ( getLocalesRuntime() != null )
-        {
-            List<Result> results = new ArrayList<Result>();
-            for ( String locale : getLocalesRuntime() )
-            {
-                MxmlcMojo cfg = this.clone();
-                configureResourceBundle( locale, cfg );
-                results.add( executeCompiler( new MxmlcConfigurationHolder( cfg, null ), fullSynchronization ) );
-            }
+	/**
+	 * When true, flexmojos will register register every compiled SWF files as
+	 * trusted. These SWF files are assigned to the local-trusted sandbox. They
+	 * can interact with any other SWF files, and they can load data from
+	 * anywhere, remote or local. On false nothing is done, so if the file is
+	 * already trusted it will still as it is.
+	 * 
+	 * @parameter default-value="true" expression="${updateSecuritySandbox}"
+	 */
+	private boolean updateSecuritySandbox;
 
-            wait( results );
-        }
+	public final Result doCompile(MxmlcConfigurationHolder cfg, boolean synchronize) throws Exception {
+		if (isUpdateSecuritySandbox()) {
+			truster.updateSecuritySandbox(PathUtil.file(cfg.getConfiguration().getOutput()));
+		}
+		return compiler.compileSwf(cfg, synchronize);
+	}
 
-        if ( getModules() != null )
-        {
-            List<Result> results = new ArrayList<Result>();
+	@Override
+	@SuppressWarnings("unchecked")
+	public IRuntimeSharedLibraryPath[] getRuntimeSharedLibraryPath() {
+		Set<Artifact> rslDependencies = super.getDependencies(not(GLOBAL_MATCHER),//
+				anyOf(scope(RSL), scope(CACHING)));
+		try {
+			rslDependencies = new RslSorter(projectBuilder, remoteRepositories, localRepository, artifactFactory,
+					resolver, artifactMetadataSource).rslsSort(rslDependencies);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return generateRSLPathFromDependencies(rslDependencies);
+	}
 
-            for ( Module module : getModules() )
-            {
-                if ( module.isOptimize() == null )
-                {
-                    module.setOptimize( modulesLoadExterns );
-                }
+	@SuppressWarnings("unchecked")
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (!PathUtil.existAny(getSourcePath())) {
+			getLog().warn("Skipping compiler, source path doesn't exist. " + Arrays.toString(getSourcePath()));
+			return;
+		}
 
-                File moduleSource =
-                    SourceFileResolver.resolveSourceFile( project.getCompileSourceRoots(), module.getSourceFile() );
+		executeCompiler(new MxmlcConfigurationHolder(this, getSourceFile()), true);
+		if (!file(getOutput()).exists()) {
+			throw new IllegalStateException("Output file doesn't exist and now error was throw by the compiler!");
+		}
 
-                String classifier = FilenameUtils.getBaseName( moduleSource.getName() ).toLowerCase();
+		if (getLocalesRuntime() != null) {
+			List<Result> results = new ArrayList<Result>();
+			for (String locale : getLocalesRuntime()) {
+				MxmlcMojo cfg = this.clone();
+				configureResourceBundle(locale, cfg);
+				results.add(executeCompiler(new MxmlcConfigurationHolder(cfg, null), fullSynchronization));
+			}
 
-                String moduleFinalName;
-                if ( module.getFinalName() != null )
-                {
-                    moduleFinalName = module.getFinalName();
-                }
-                else
-                {
-                    moduleFinalName = project.getBuild().getFinalName() + "-" + classifier;
-                }
+			wait(results);
+		}
 
-                File moduleOutputDir;
-                if ( module.getDestinationPath() != null )
-                {
-                    moduleOutputDir = new File( project.getBuild().getDirectory(), module.getDestinationPath() );
-                }
-                else
-                {
-                    moduleOutputDir = new File( project.getBuild().getDirectory() );
-                }
+		if (getModules() != null) {
+			List<Result> results = new ArrayList<Result>();
 
-                List<String> loadExterns = new ArrayList<String>();
-                loadExterns.add( getLinkReport() );
-                if ( getLoadExterns() != null )
-                {
-                    loadExterns.addAll( Arrays.asList( getLoadExterns() ) );
-                }
+			for (Module module : getModules()) {
+				if (module.isOptimize() == null) {
+					module.setOptimize(modulesLoadExterns);
+				}
 
-                MxmlcMojo cfg = this.clone();
-                cfg.classifier = classifier;
-                cfg.targetDirectory = moduleOutputDir;
-                cfg.finalName = moduleFinalName;
-                if ( module.isOptimize() )
-                {
-                    cfg.getCache().put( LOAD_EXTERNS, loadExterns.toArray( new String[1] ) );
-                }
-                cfg.getCache().put( RUNTIME_SHARED_LIBRARY_PATH, null );
-                cfg.getCache().put( INCLUDE_LIBRARIES, null );
-                cfg.getCache().put( EXTERNAL_LIBRARY_PATH,
-                                    MavenUtils.getFiles( getDependencies( not( GLOBAL_MATCHER ),//
-                                                                          allOf( type( SWC ),//
-                                                                                 anyOf( scope( EXTERNAL ),
-                                                                                        scope( CACHING ), scope( RSL ),
-                                                                                        scope( INTERNAL ) ) ) ),
-                                                         getGlobalArtifact() ) );
-                results.add( executeCompiler( new MxmlcConfigurationHolder( cfg, moduleSource ), fullSynchronization ) );
-            }
+				File moduleSource = SourceFileResolver.resolveSourceFile(project.getCompileSourceRoots(),
+						module.getSourceFile());
 
-            wait( results );
-        }
-    }
+				String classifier = FilenameUtils.getBaseName(moduleSource.getName()).toLowerCase();
 
-    public List<String> getFileSpecs()
-    {
-        return fileSpecs;
-    }
+				String moduleFinalName;
+				if (module.getFinalName() != null) {
+					moduleFinalName = module.getFinalName();
+				} else {
+					moduleFinalName = project.getBuild().getFinalName() + "-" + classifier;
+				}
 
-    public List<String> getIncludeResourceBundles()
-    {
-        return includeResourceBundles;
-    }
+				File moduleOutputDir;
+				if (module.getDestinationPath() != null) {
+					moduleOutputDir = new File(project.getBuild().getDirectory(), module.getDestinationPath());
+				} else {
+					moduleOutputDir = new File(project.getBuild().getDirectory());
+				}
 
-    @Override
-    public String[] getLocale()
-    {
-        String[] locales = super.getLocale();
-        if ( locales != null )
-        {
-            return locales;
-        }
+				List<String> loadExterns = new ArrayList<String>();
+				loadExterns.add(getLinkReport());
+				if (getLoadExterns() != null) {
+					loadExterns.addAll(Arrays.asList(getLoadExterns()));
+				}
 
-        if ( "css".equalsIgnoreCase( FilenameUtils.getExtension( sourceFile ) ) )
-        {
-            return new String[] {};
-        }
+				MxmlcMojo cfg = this.clone();
+				cfg.classifier = classifier;
+				cfg.targetDirectory = moduleOutputDir;
+				cfg.finalName = moduleFinalName;
+				if (module.isOptimize()) {
+					cfg.getCache().put(LOAD_EXTERNS, loadExterns.toArray(new String[1]));
+				}
+				cfg.getCache().put(RUNTIME_SHARED_LIBRARY_PATH, null);
+				cfg.getCache().put(INCLUDE_LIBRARIES, null);
+				cfg.getCache().put(
+						EXTERNAL_LIBRARY_PATH,
+						MavenUtils.getFiles(getDependencies(not(GLOBAL_MATCHER),//
+								allOf(type(SWC),//
+										anyOf(scope(EXTERNAL), scope(CACHING), scope(RSL), scope(INTERNAL)))),
+								getGlobalArtifact()));
+				results.add(executeCompiler(new MxmlcConfigurationHolder(cfg, moduleSource), fullSynchronization));
+			}
 
-        return new String[] { toolsLocale };
+			wait(results);
+		}
+	}
 
-    }
+	public List<String> getFileSpecs() {
+		return fileSpecs;
+	}
 
-    public Module[] getModules()
-    {
-        return modules;
-    }
+	public List<String> getIncludeResourceBundles() {
+		return includeResourceBundles;
+	}
 
-    public String getProjector()
-    {
-        return projector;
-    }
+	@Override
+	public String[] getLocale() {
+		String[] locales = super.getLocale();
+		if (locales != null) {
+			return locales;
+		}
 
-    @Override
-    public final String getProjectType()
-    {
-        return SWF;
-    }
+		if ("css".equalsIgnoreCase(FilenameUtils.getExtension(sourceFile))) {
+			return new String[] {};
+		}
 
-    protected File getSourceFile()
-    {
-        return SourceFileResolver.resolveSourceFile( project.getCompileSourceRoots(), sourceFile, project.getGroupId(),
-                                                     project.getArtifactId() );
-    }
+		return new String[] { toolsLocale };
 
-    public boolean isUpdateSecuritySandbox()
-    {
-        return updateSecuritySandbox;
-    }
+	}
+
+	public Module[] getModules() {
+		return modules;
+	}
+
+	public String getProjector() {
+		return projector;
+	}
+
+	@Override
+	public final String getProjectType() {
+		return SWF;
+	}
+
+	protected File getSourceFile() {
+		return SourceFileResolver.resolveSourceFile(project.getCompileSourceRoots(), sourceFile, project.getGroupId(),
+				project.getArtifactId());
+	}
+
+	public boolean isUpdateSecuritySandbox() {
+		return updateSecuritySandbox;
+	}
 }

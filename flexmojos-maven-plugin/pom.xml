@@ -12,6 +12,7 @@
     <relativePath>../flexmojos-parent/pom.xml</relativePath>
   </parent>
 
+  <version>4.0B</version>
   <artifactId>flexmojos-maven-plugin</artifactId>
 
   <packaging>maven-plugin</packaging>
@@ -166,7 +167,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-threadlocaltoolkit-wrapper</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -181,37 +182,37 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-flex-compiler</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-configurator</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-generator-api</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-generator-graniteds-2.2.0</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-generator-constraints</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-coverage-reporter</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-generator-mojo</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
       <type>maven-plugin</type>
     </dependency>
 
@@ -286,7 +287,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>flexmojos-tester</artifactId>
-      <version>${project.version}</version>
+      <version>4.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -399,7 +400,7 @@
                   <goal>upload-file</goal>
                 </goals>
                 <configuration>
-                  <repositoryPath>flexmojos/${project.version}</repositoryPath>
+                  <repositoryPath>flexmojos/4.0-SNAPSHOT</repositoryPath>
                 </configuration>
               </execution>
               <execution>
@@ -416,7 +417,7 @@
             <configuration>
               <serverId>rso</serverId>
               <repositoryUrl>http://repository.sonatype.org/service/local/repositories/maven-sites/content-compressed</repositoryUrl>
-              <file>target/${project.artifactId}-${project.version}-site.jar</file>
+              <file>target/${project.artifactId}-4.0-SNAPSHOT-site.jar</file>
             </configuration>
           </plugin>
         </plugins>

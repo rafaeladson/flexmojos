@@ -221,14 +221,15 @@ public class CompcMojo
             return;
         }
 
-        executeCompiler( this, true );
+        CompcMojo cfg = this.clone();
+        cfg.getCache().put(RUNTIME_SHARED_LIBRARY_PATH, null);
+        executeCompiler( cfg, true );
 
         if ( getLocalesRuntime() != null )
         {
             List<Result> results = new ArrayList<Result>();
             for ( String locale : getLocalesRuntime() )
             {
-                CompcMojo cfg = this.clone();
                 configureResourceBundle( locale, cfg );
                 cfg.getCache().put( PROJECT_TYPE, RB_SWC );
                 results.add( executeCompiler( cfg, fullSynchronization ) );

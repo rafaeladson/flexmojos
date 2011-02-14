@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.sonatype.flexmojos.plugin.common.FlexScopes.*;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.sonatype.flexmojos.matcher.artifact.ArtifactMatcher.artifactId;
@@ -2740,7 +2742,11 @@ public abstract class AbstractFlexCompilerMojo<CFG, C extends AbstractFlexCompil
         Set<Artifact> dependencies = getDependencies( not( GLOBAL_MATCHER ),//
                                                       anyOf( scope( RSL ), scope( CACHING ) ) );
 
-        if ( dependencies.isEmpty() )
+        return generateRSLPathFromDependencies(dependencies);
+    }
+
+	protected IRuntimeSharedLibraryPath[] generateRSLPathFromDependencies(Set<Artifact> dependencies) {
+		if ( dependencies.isEmpty() )
         {
             return null;
         }
@@ -2778,7 +2784,7 @@ public abstract class AbstractFlexCompilerMojo<CFG, C extends AbstractFlexCompil
         }
 
         return rsls.toArray( new IRuntimeSharedLibraryPath[rsls.size()] );
-    }
+	}
 
     public IRuntimeSharedLibrarySettingsConfiguration getRuntimeSharedLibrarySettingsConfiguration()
     {
