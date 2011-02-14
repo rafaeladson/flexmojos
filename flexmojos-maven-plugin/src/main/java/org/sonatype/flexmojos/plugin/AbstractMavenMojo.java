@@ -91,6 +91,10 @@ public abstract class AbstractMavenMojo
 
     protected static final Matcher<? extends Artifact> GLOBAL_MATCHER = initGlobalMatcher();
 
+    protected static final Matcher<? extends Artifact> AIR_GLOBAL_MATCHER = initAirGlobalMatcher();
+
+    protected static final Matcher<? extends Artifact> FLEX_GLOBAL_MATCHER = initFlexGlobalMatcher();
+
     private static final String PLAYER_GLOBAL = "playerglobal";
 
     protected static final Answer<Object> RETURNS_NULL = new Answer<Object>()
@@ -109,6 +113,20 @@ public abstract class AbstractMavenMojo
     {
         return allOf( groupId( FRAMEWORK_GROUP_ID ), type( SWC ),//
                       anyOf( artifactId( PLAYER_GLOBAL ), artifactId( AIR_GLOBAL ) ) );
+    }
+
+    @SuppressWarnings( "unchecked" )
+    private static Matcher<? extends Artifact> initAirGlobalMatcher()
+    {
+    	return allOf( groupId( FRAMEWORK_GROUP_ID ), type( SWC ),//
+    			anyOf(artifactId( AIR_GLOBAL ) ) );
+    }
+
+    @SuppressWarnings( "unchecked" )
+    private static Matcher<? extends Artifact> initFlexGlobalMatcher()
+    {
+    	return allOf( groupId( FRAMEWORK_GROUP_ID ), type( SWC ),//
+    			anyOf(artifactId( PLAYER_GLOBAL ) ) );
     }
 
     /**
@@ -195,6 +213,13 @@ public abstract class AbstractMavenMojo
      * @parameter default-value="false" expression="${flexmojos.quick}"
      */
     protected boolean quick;
+
+    /**
+     * Used to distinguish between air and flex Artifacts, for globaMatcher Resolution.
+     * 
+     * @parameter default-value="true" expression="${flexmojos.airArtifact}"
+     */
+    protected boolean airArtifact;
 
     /**
      * List of remote repositories to be used by the plugin to resolve dependencies.

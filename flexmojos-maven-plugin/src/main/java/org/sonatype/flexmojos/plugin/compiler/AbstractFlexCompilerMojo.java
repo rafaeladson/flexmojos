@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.not;
+import static ch.lambdaj.Lambda.*;
 import static org.hamcrest.Matchers.nullValue;
 import static org.sonatype.flexmojos.plugin.common.FlexScopes.*;
 
@@ -2159,7 +2160,22 @@ public abstract class AbstractFlexCompilerMojo<CFG, C extends AbstractFlexCompil
     {
         synchronized ( lock )
         {
-            Artifact global = getDependency( GLOBAL_MATCHER );
+            Set<Artifact> globalMatchers = getDependencies( GLOBAL_MATCHER );
+            Artifact global;
+            if (globalMatchers.size() == 1){
+            	 global = globalMatchers.iterator().next();
+            }else if (airArtifact){
+            	global = selectFirst(globalMatchers,AIR_GLOBAL_MATCHER);
+            	if (global == null){
+            		global = selectFirst(globalMatchers,FLEX_GLOBAL_MATCHER);
+            	}
+            }else{
+            	global = selectFirst(globalMatchers,FLEX_GLOBAL_MATCHER);
+            	if (global == null){
+            		global = selectFirst(globalMatchers,AIR_GLOBAL_MATCHER);
+            	}
+            }
+            
             if ( global == null )
             {
                 throw new IllegalArgumentException(
