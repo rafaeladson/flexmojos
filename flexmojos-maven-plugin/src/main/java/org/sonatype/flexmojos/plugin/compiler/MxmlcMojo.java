@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
@@ -175,8 +176,7 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 	@Override
 	@SuppressWarnings("unchecked")
 	public IRuntimeSharedLibraryPath[] getRuntimeSharedLibraryPath() {
-		Set<Artifact> rslDependencies = super.getDependencies(not(GLOBAL_MATCHER),//
-				anyOf(scope(RSL), scope(CACHING)));
+		Set<Artifact> rslDependencies = super.getDependencies(anyOf(scope(RSL), scope(CACHING)));
 		try {
 			rslDependencies = new RslSorter(projectBuilder, remoteRepositories, localRepository, artifactFactory,
 					resolver, artifactMetadataSource).rslsSort(rslDependencies);
@@ -209,7 +209,7 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 			wait(results);
 		}
 
-		if (getModules() != null) {
+		if (hasAtLeastOneValidModule()) {
 			List<Result> results = new ArrayList<Result>();
 
 			for (Module module : getModules()) {
@@ -262,6 +262,14 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 
 			wait(results);
 		}
+	}
+
+	private boolean hasAtLeastOneValidModule() {
+		if (getModules() == null || getModules().length==0){
+			return false;
+		}
+		String moduleSourceFile = getModules()[0].getSourceFile();
+		return StringUtils.isNotEmpty(moduleSourceFile) && moduleSourceFile.contains("mxml");
 	}
 
 	public List<String> getFileSpecs() {
