@@ -166,6 +166,15 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 	 */
 	private boolean updateSecuritySandbox;
 
+	/**
+	 * When true, flexmojos will sort RSLs based upon their transitive
+	 * dependencies. So, if a RSL B depends on another RSL A the plugin will
+	 * consider that B needs to be loaded first.
+	 * 
+	 * @parameter default-value="true" expression="${autoSortRSLs}"
+	 */
+	private boolean autoSortRSLs;
+
 	public final Result doCompile(MxmlcConfigurationHolder cfg, boolean synchronize) throws Exception {
 		if (isUpdateSecuritySandbox()) {
 			truster.updateSecuritySandbox(PathUtil.file(cfg.getConfiguration().getOutput()));
@@ -177,11 +186,13 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 	@SuppressWarnings("unchecked")
 	public IRuntimeSharedLibraryPath[] getRuntimeSharedLibraryPath() {
 		Set<Artifact> rslDependencies = super.getDependencies(anyOf(scope(RSL), scope(CACHING)));
-		try {
-			rslDependencies = new RslSorter(projectBuilder, remoteRepositories, localRepository, artifactFactory,
-					resolver, artifactMetadataSource).rslsSort(rslDependencies);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (autoSortRSLs) {
+			try {
+				rslDependencies = new RslSorter(projectBuilder, remoteRepositories, localRepository, artifactFactory,
+						resolver, artifactMetadataSource).rslsSort(rslDependencies);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return generateRSLPathFromDependencies(rslDependencies);
 	}
@@ -265,7 +276,7 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 	}
 
 	private boolean hasAtLeastOneValidModule() {
-		if (getModules() == null || getModules().length==0){
+		if (getModules() == null || getModules().length == 0) {
 			return false;
 		}
 		String moduleSourceFile = getModules()[0].getSourceFile();
