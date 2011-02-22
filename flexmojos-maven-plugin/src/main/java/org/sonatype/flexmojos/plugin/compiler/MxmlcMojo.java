@@ -189,7 +189,7 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 		if (autoSortRSLs) {
 			try {
 				rslDependencies = new RslSorter(projectBuilder, remoteRepositories, localRepository, artifactFactory,
-						resolver, artifactMetadataSource).rslsSort(rslDependencies);
+						resolver, artifactMetadataSource,getLog()).rslsSort(rslDependencies);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
