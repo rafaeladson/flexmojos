@@ -189,7 +189,7 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 		if (autoSortRSLs) {
 			try {
 				rslDependencies = new RslSorter(projectBuilder, remoteRepositories, localRepository, artifactFactory,
-						resolver, artifactMetadataSource,getLog()).rslsSort(rslDependencies);
+						resolver, artifactMetadataSource, getLog()).rslsSort(rslDependencies);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -307,7 +307,16 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 	}
 
 	public Module[] getModules() {
-		return modules;
+		List<Module> validModules = new ArrayList<Module>();
+		if (modules == null) {
+			return modules;
+		}
+		for (Module module : modules) {
+			if (module.getSourceFile().contains("mxml")) {
+				validModules.add(module);
+			}
+		}
+		return validModules.toArray(new Module[] {});
 	}
 
 	public String getProjector() {
