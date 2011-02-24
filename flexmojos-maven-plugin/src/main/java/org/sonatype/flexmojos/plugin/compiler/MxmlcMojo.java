@@ -231,7 +231,7 @@ public class MxmlcMojo extends AbstractFlexCompilerMojo<MxmlcConfigurationHolder
 				File moduleSource = SourceFileResolver.resolveSourceFile(project.getCompileSourceRoots(),
 						module.getSourceFile());
 
-				String classifier = FilenameUtils.getBaseName(moduleSource.getName()).toLowerCase();
+				String classifier = FilenameUtils.getBaseName(moduleSource.getName());
 
 				String moduleFinalName;
 				if (module.getFinalName() != null) {
