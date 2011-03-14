@@ -30,12 +30,16 @@
 
   <distributionManagement>
     <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+      <uniqueVersion>false</uniqueVersion>
+      <id>p2didc1-releases</id>
+      <name>p2didc1-releases</name>
+      <url>http://p2dnexus.touchtec.com.br/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <uniqueVersion>false</uniqueVersion>
+      <id>p2didc1-snapshots</id>
+      <name>p2didc1-snapshots</name>
+      <url>http://p2dnexus.touchtec.com.br/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 

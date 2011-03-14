@@ -19,7 +19,7 @@
       <plugin>
         <groupId>org.sonatype.flexmojos</groupId>
         <artifactId>flexmojos-maven-plugin</artifactId>
-        <version>${project.version}</version>
+        <version>4.0B</version>
         <extensions>true</extensions>
         <configuration>
           <!-- dita is bugged, why it doesn't surprises me? -->
